@@ -6,6 +6,7 @@ on:
     branches:
     - master
     - develop
+    - all-nano-on-ci
   pull_request:
     branches:
     - master
