@@ -632,9 +632,24 @@ DEFINES   += COIN_KIND=COIN_KIND_HYDRA
 DEFINES   += COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
 APPNAME ="Hydra"
 APP_LOAD_PARAMS += --path "44'/609'"
+else ifeq ($(COIN),navcoin)
+# Navcoin
+DEFINES   += BIP32_PUBKEY_VERSION=0x00000000 # unused
+DEFINES   += BIP44_COIN_TYPE=0
+DEFINES   += BIP44_COIN_TYPE_2=0
+DEFINES   += COIN_P2PKH_VERSION=53
+DEFINES   += COIN_P2SH_VERSION=85
+DEFINES   += COIN_FAMILY=2
+DEFINES   += COIN_COINID=\"Navcoin\"
+DEFINES   += COIN_COINID_HEADER=\"NAVCOIN\"
+DEFINES   += COIN_COINID_NAME=\"Navcoin\"
+DEFINES   += COIN_COINID_SHORT=\"NAV\"
+DEFINES   += COIN_KIND=COIN_KIND_NAV
+APPNAME ="Navcoin"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, firo, gamecredits, zclassic, xsn, nix, lbry, resistance, ravencoin, hydra, hydra_testnet, xrhodium)
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, firo, gamecredits, zclassic, xsn, nix, lbry, resistance, ravencoin, hydra, hydra_testnet, xrhodium, navcoin)
 endif
 endif
 
@@ -766,10 +781,10 @@ dep/%.d: %.c Makefile
 # Temporary restriction until we a Resistance Nano X icon
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private firo gamecredits zclassic xsn nix lbry ravencoin resistance hydra hydra_testnet xrhodium
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private firo gamecredits zclassic xsn nix lbry ravencoin resistance hydra hydra_testnet xrhodium navcoin
 else
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private firo gamecredits zclassic xsn nix lbry ravencoin hydra hydra_testnet xrhodium
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private firo gamecredits zclassic xsn nix lbry ravencoin hydra hydra_testnet xrhodium navcoin
 endif
 
 
