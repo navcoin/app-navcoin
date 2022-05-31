@@ -71,43 +71,23 @@ unsigned char btchip_output_script_is_regular(unsigned char *buffer) {
             return 1;
         }
     }
-    if (G_coin_config->kind == COIN_KIND_HORIZEN) {
-        if ((os_memcmp(buffer, ZEN_OUTPUT_SCRIPT_PRE,
-                       sizeof(ZEN_OUTPUT_SCRIPT_PRE)) == 0) &&
-            (os_memcmp(buffer + sizeof(ZEN_OUTPUT_SCRIPT_PRE) + 20,
-                       ZEN_OUTPUT_SCRIPT_POST,
-                       sizeof(ZEN_OUTPUT_SCRIPT_POST)) == 0)) {
-            return 1;
-        }
-    } else {
-        if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_PRE,
-                       sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE)) == 0) &&
-            (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE) + 20,
-                       TRANSACTION_OUTPUT_SCRIPT_POST,
-                       sizeof(TRANSACTION_OUTPUT_SCRIPT_POST)) == 0)) {
-            return 1;
-        }
+    if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_PRE,
+                   sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE)) == 0) &&
+        (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE) + 20,
+                   TRANSACTION_OUTPUT_SCRIPT_POST,
+                   sizeof(TRANSACTION_OUTPUT_SCRIPT_POST)) == 0)) {
+        return 1;
     }
     return 0;
 }
 
 unsigned char btchip_output_script_is_p2sh(unsigned char *buffer) {
-    if (G_coin_config->kind == COIN_KIND_HORIZEN) {
-        if ((os_memcmp(buffer, ZEN_TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE,
-                       sizeof(ZEN_TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE)) == 0) &&
-            (os_memcmp(buffer + sizeof(ZEN_TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE) + 20,
-                       ZEN_TRANSACTION_OUTPUT_SCRIPT_P2SH_POST,
-                       sizeof(ZEN_TRANSACTION_OUTPUT_SCRIPT_P2SH_POST)) == 0)) {
-            return 1;
-        }
-    } else {
-        if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE,
-                       sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE)) == 0) &&
-            (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE) + 20,
-                       TRANSACTION_OUTPUT_SCRIPT_P2SH_POST,
-                       sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_POST)) == 0)) {
-            return 1;
-        }
+    if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE,
+                   sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE)) == 0) &&
+        (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE) + 20,
+                   TRANSACTION_OUTPUT_SCRIPT_P2SH_POST,
+                   sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_POST)) == 0)) {
+        return 1;
     }
     return 0;
 }
@@ -125,12 +105,7 @@ unsigned char btchip_output_script_is_native_witness(unsigned char *buffer) {
 }
 
 unsigned char btchip_output_script_is_op_return(unsigned char *buffer) {
-    if (G_coin_config->kind == COIN_KIND_BITCOIN_CASH) {
-        return ((buffer[1] == 0x6A) || ((buffer[1] == 0x00) && (buffer[2] == 0x6A)));
-    }
-    else {
-        return (buffer[1] == 0x6A);
-    }
+    return (buffer[1] == 0x6A);
 }
 
 static unsigned char output_script_is_op_create_or_call(unsigned char *buffer,

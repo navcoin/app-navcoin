@@ -81,9 +81,7 @@ unsigned short btchip_apdu_get_wallet_public_key() {
     case P2_SEGWIT:
         break;
     case P2_CASHADDR:
-        if (G_coin_config->kind != COIN_KIND_BITCOIN_CASH) {
-            return BTCHIP_SW_INCORRECT_P1_P2;
-        }
+        return BTCHIP_SW_INCORRECT_P1_P2;
         break;
     default:
         return BTCHIP_SW_INCORRECT_P1_P2;

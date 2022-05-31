@@ -828,25 +828,19 @@ uint8_t prepare_fees() {
         borrow = transaction_amount_sub_be(
                 fees, btchip_context_D.transactionContext.transactionAmount,
                 btchip_context_D.totalOutputAmount);
-        if (borrow && G_coin_config->kind == COIN_KIND_KOMODO) {
-            os_memmove(vars.tmp.feesAmount, "REWARD", 6);
-            vars.tmp.feesAmount[6] = '\0';
+        if (borrow) {
+            PRINTF("Error : Fees not consistent");
+            goto error;
         }
-        else {
-            if (borrow) {
-                PRINTF("Error : Fees not consistent");
-                goto error;
-            }
-            os_memmove(vars.tmp.feesAmount, G_coin_config->name_short,
-                       strlen(G_coin_config->name_short));
-            vars.tmp.feesAmount[strlen(G_coin_config->name_short)] = ' ';
-            btchip_context_D.tmp =
-                (unsigned char *)(vars.tmp.feesAmount +
-                              strlen(G_coin_config->name_short) + 1);
-            textSize = btchip_convert_hex_amount_to_displayable(fees);
-            vars.tmp.feesAmount[textSize + strlen(G_coin_config->name_short) + 1] =
-                '\0';
-        }
+        os_memmove(vars.tmp.feesAmount, G_coin_config->name_short,
+                   strlen(G_coin_config->name_short));
+        vars.tmp.feesAmount[strlen(G_coin_config->name_short)] = ' ';
+        btchip_context_D.tmp =
+            (unsigned char *)(vars.tmp.feesAmount +
+                          strlen(G_coin_config->name_short) + 1);
+        textSize = btchip_convert_hex_amount_to_displayable(fees);
+        vars.tmp.feesAmount[textSize + strlen(G_coin_config->name_short) + 1] =
+            '\0';
     }
     return 1;
 error:
@@ -860,16 +854,6 @@ error:
 void get_address_from_output_script(unsigned char* script, int script_size, char* out, int out_size) {
     if (btchip_output_script_is_op_return(script)) {
         strcpy(out, "OP_RETURN");
-        return;
-    }
-    if ((G_coin_config->kind == COIN_KIND_QTUM || G_coin_config->kind == COIN_KIND_HYDRA) &&
-        btchip_output_script_is_op_create(script, script_size)) {
-        strcpy(out, "OP_CREATE");
-        return;
-    }
-    if ((G_coin_config->kind == COIN_KIND_QTUM || G_coin_config->kind == COIN_KIND_HYDRA) &&
-        btchip_output_script_is_op_call(script, script_size)) {
-        strcpy(out, "OP_CALL");
         return;
     }
     if (btchip_output_script_is_native_witness(script)) {
