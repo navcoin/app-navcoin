@@ -68,6 +68,7 @@ unsigned short btchip_apdu_hash_sign() {
 
             sw = BTCHIP_SW_OK;
           } else if (G_io_apdu_buffer[ISO_OFFSET_P1] == 0) {
+            btchip_set_check_internal_structure_integrity(0);
             if (btchip_context_D.transactionContext.transactionState !=
                 BTCHIP_TRANSACTION_SIGN_READY) {
                 PRINTF("Invalid transaction state %d\n", btchip_context_D.transactionContext.transactionState);
