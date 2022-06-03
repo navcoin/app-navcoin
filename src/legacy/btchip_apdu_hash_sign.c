@@ -27,9 +27,8 @@
 #endif
 
 unsigned short btchip_apdu_hash_sign() {
-    unsigned long int lockTime;
     uint32_t sighashType;
-    unsigned char dataBuffer[8];
+    unsigned char dataBuffer[4];
     unsigned char authorizationLength;
     unsigned char *parameters = G_io_apdu_buffer + ISO_OFFSET_CDATA;
     unsigned short sw;
@@ -44,51 +43,34 @@ unsigned short btchip_apdu_hash_sign() {
         return BTCHIP_SW_CONDITIONS_OF_USE_NOT_SATISFIED;
     }
 
-    if ((G_io_apdu_buffer[ISO_OFFSET_P1] != 0) ||
+    if (!(G_io_apdu_buffer[ISO_OFFSET_P1] == 0 ||
+        G_io_apdu_buffer[ISO_OFFSET_P1] == 1) &&
         (G_io_apdu_buffer[ISO_OFFSET_P2] != 0)) {
         return BTCHIP_SW_INCORRECT_P1_P2;
     }
 
-    if (G_io_apdu_buffer[ISO_OFFSET_LC] < (1 + 1 + 4 + 1)) {
+    if (G_io_apdu_buffer[ISO_OFFSET_P1] == 0 &&
+        G_io_apdu_buffer[ISO_OFFSET_LC] < (1 + 1 + 4 + 1)) {
         return BTCHIP_SW_INCORRECT_LENGTH;
     }
 
     // Check state
     BEGIN_TRY {
         TRY {
-            btchip_set_check_internal_structure_integrity(0);
+          if (G_io_apdu_buffer[ISO_OFFSET_P1] == 1) {
+            unsigned char apduLength;
+            apduLength = G_io_apdu_buffer[ISO_OFFSET_LC];
 
-            // Zcash special - store parameters for later
+            PRINTF("Add to hash full\n%.*H\n", apduLength, G_io_apdu_buffer + ISO_OFFSET_CDATA);
 
-            if ((btchip_context_D.usingOverwinter) &&
-                (!btchip_context_D.overwinterSignReady) &&
-                (btchip_context_D.segwitParsedOnce) &&
-                (btchip_context_D.transactionContext.transactionState == BTCHIP_TRANSACTION_NONE)) {
-                unsigned long int expiryHeight;
-                parameters += (4 * G_io_apdu_buffer[ISO_OFFSET_CDATA]) + 1;
-                authorizationLength = *(parameters++);
-                parameters += authorizationLength;
-                lockTime = btchip_read_u32(parameters, 1, 0);
-                parameters += 4;
-                sighashType = *(parameters++);
-                expiryHeight = btchip_read_u32(parameters, 1, 0);
-                btchip_write_u32_le(btchip_context_D.nLockTime, lockTime);
-                btchip_write_u32_le(btchip_context_D.sigHashType, sighashType);
-                btchip_write_u32_le(btchip_context_D.nExpiryHeight, expiryHeight);
-                btchip_context_D.overwinterSignReady = 1;
-                CLOSE_TRY;
-                return BTCHIP_SW_OK;
-            }
+            cx_hash(&btchip_context_D.transactionHashFull.sha256.header, 0,
+                G_io_apdu_buffer + ISO_OFFSET_CDATA, apduLength, NULL, 0);
 
+            sw = BTCHIP_SW_OK;
+          } else if (G_io_apdu_buffer[ISO_OFFSET_P1] == 0) {
             if (btchip_context_D.transactionContext.transactionState !=
                 BTCHIP_TRANSACTION_SIGN_READY) {
                 PRINTF("Invalid transaction state %d\n", btchip_context_D.transactionContext.transactionState);
-                sw = BTCHIP_SW_CONDITIONS_OF_USE_NOT_SATISFIED;
-                goto discardTransaction;
-            }
-
-            if (btchip_context_D.usingOverwinter && !btchip_context_D.overwinterSignReady) {
-                PRINTF("Overwinter not ready to sign\n");
                 sw = BTCHIP_SW_CONDITIONS_OF_USE_NOT_SATISFIED;
                 goto discardTransaction;
             }
@@ -106,8 +88,6 @@ unsigned short btchip_apdu_hash_sign() {
             parameters += (4 * G_io_apdu_buffer[ISO_OFFSET_CDATA]) + 1;
             authorizationLength = *(parameters++);
             parameters += authorizationLength;
-            lockTime = btchip_read_u32(parameters, 1, 0);
-            parameters += 4;
             sighashType = *(parameters++);
             btchip_context_D.transactionSummary.sighashType = sighashType;
 
@@ -129,14 +109,10 @@ unsigned short btchip_apdu_hash_sign() {
                 }
             }
 
-            // Finalize the hash
-            if (!btchip_context_D.usingOverwinter) {
-                btchip_write_u32_le(dataBuffer, lockTime);
-                btchip_write_u32_le(dataBuffer + 4, sighashType);
-                PRINTF("--- ADD TO HASH FULL:\n%.*H\n", sizeof(dataBuffer), dataBuffer);
-                cx_hash(&btchip_context_D.transactionHashFull.sha256.header, 0,
-                    dataBuffer, sizeof(dataBuffer), NULL, 0);
-            }
+            btchip_write_u32_le(dataBuffer, sighashType);
+            PRINTF("--- ADD TO HASH FULL:\n%.*H\n", sizeof(dataBuffer), dataBuffer);
+            cx_hash(&btchip_context_D.transactionHashFull.sha256.header, 0,
+                dataBuffer, sizeof(dataBuffer), NULL, 0);
 
             // Check if the path needs to be enforced
             if (!enforce_bip44_coin_type(btchip_context_D.transactionSummary.keyPath, false)) {
@@ -159,6 +135,7 @@ unsigned short btchip_apdu_hash_sign() {
             }
 
             // Then discard the transaction and reply
+          }
         }
         CATCH_ALL {
             sw = SW_TECHNICAL_DETAILS(0xF);
@@ -182,19 +159,14 @@ void btchip_bagl_user_action_signtx(unsigned char confirming, unsigned char dire
         unsigned char hash[32];
         // Fetch the private key
         btchip_private_derive_keypair(btchip_context_D.transactionSummary.keyPath, 0, NULL, &private_key, NULL);
-        if (btchip_context_D.usingOverwinter) {
-            cx_hash(&btchip_context_D.transactionHashFull.blake2b.header, CX_LAST, hash, 0, hash, 32);
-        }
-        else {
-            cx_sha256_t localHash;
-            cx_hash(&btchip_context_D.transactionHashFull.sha256.header, CX_LAST,
-                hash, 0, hash, 32);
-            PRINTF("Hash1\n%.*H\n", sizeof(hash), hash);
+        cx_sha256_t localHash;
+        cx_hash(&btchip_context_D.transactionHashFull.sha256.header, CX_LAST,
+            hash, 0, hash, 32);
+        PRINTF("Hash1\n%.*H\n", sizeof(hash), hash);
 
-            // Rehash
-            cx_sha256_init(&localHash);
-            cx_hash(&localHash.header, CX_LAST, hash, sizeof(hash), hash, 32);
-        }
+        // Rehash
+        cx_sha256_init(&localHash);
+        cx_hash(&localHash.header, CX_LAST, hash, sizeof(hash), hash, 32);
         PRINTF("Hash2\n%.*H\n", sizeof(hash), hash);
         // Sign
         btchip_sign_finalhash(
