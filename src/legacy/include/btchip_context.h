@@ -243,18 +243,6 @@ struct btchip_context_s {
 };
 typedef struct btchip_context_s btchip_context_t;
 
-
-/**
- * Structure to configure the bitcoin application for a given altcoin
- *
- */
-typedef enum btchip_coin_flags_e {
-    FLAG_PEERCOIN_UNITS=1,
-    FLAG_PEERCOIN_SUPPORT=2,
-    FLAG_SEGWIT_CHANGE_SUPPORT=4
-} btchip_coin_flags_t;
-
-
 typedef enum btchip_coin_kind_e {
     COIN_KIND_NAVCOIN_TESTNET,
     COIN_KIND_NAVCOIN,

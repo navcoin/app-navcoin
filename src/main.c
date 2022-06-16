@@ -156,8 +156,6 @@ void init_coin_config(btchip_altcoin_config_t *coin_config) {
 #endif  // #ifdef COIN_NATIVE_SEGWIT_PREFIX
 
 #ifndef DISABLE_LEGACY_SUPPORT
-    // legacy only
-    coin_config->family = COIN_FAMILY;
 
     _Static_assert(sizeof(COIN_COINID) <= sizeof(coin_config->coinid), "COIN_COINID too large");
     strcpy(coin_config->coinid, COIN_COINID);

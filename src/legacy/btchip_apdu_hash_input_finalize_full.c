@@ -90,13 +90,9 @@ static bool check_output_displayable() {
             btchip_public_key_hash160(changeSegwit, 22, changeSegwit);
             if (os_memcmp(btchip_context_D.currentOutput + 8 + addressOffset,
                           changeSegwit, 20) == 0) {
-                if (G_coin_config->flags & FLAG_SEGWIT_CHANGE_SUPPORT) {
-                    changeFound = true;
-                } else {
-                    // Attempt to avoid fatal failures on Bitcoin Cash
-                    PRINTF("Error : Non spendable Segwit change");
-                    THROW(EXCEPTION);
-                }
+                // Attempt to avoid fatal failures on Bitcoin Cash
+                PRINTF("Error : Non spendable Segwit change");
+                THROW(EXCEPTION);
             }
         }
         if (changeFound) {

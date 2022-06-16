@@ -31,13 +31,6 @@ enum btchip_supported_modes_e {
     BTCHIP_SUPPORTED_MODE_DEVELOPER = 0x08
 };
 
-enum btchip_family_e {
-    BTCHIP_FAMILY_BITCOIN = 0x01,
-    BTCHIP_FAMILY_PEERCOIN = 0x02,
-    BTCHIP_FAMILY_QTUM = 0x03,
-    BTCHIP_FAMILY_STEALTH = 0x04
-};
-
 struct btchip_config_s {
     secu8 supportedModes;
     secu8 operationMode;
