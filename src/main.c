@@ -295,7 +295,13 @@ void app_exit() {
 
 static void initialize_app_globals() {
     io_reset_timeouts();
-    memset(&G_swap_state, 0, sizeof(G_swap_state));
+
+    // We only zero the called_from_swap and should_exit fields and not the entire G_swap_state, as
+    // we need the globals initialization to happen _after_ calling copy_transaction_parameters when
+    // processing a SIGN_TRANSACTION request from the swap app (which initializes the other fields
+    // of G_swap_state).
+    G_swap_state.called_from_swap = false;
+    G_swap_state.should_exit = false;
 }
 
 /**
@@ -389,9 +395,12 @@ static void swap_library_main_helper(struct libargs_s *args) {
             args->check_address->result =
                 handle_check_address(args->check_address, args->coin_config);
             break;
-        case SIGN_TRANSACTION:
+        case SIGN_TRANSACTION: {
+            // copying arguments (pointing to globals) to context *before*
+            // calling `initialize_app_globals` as it could override them
+            const bool args_are_copied = copy_transaction_parameters(args->create_transaction);
             initialize_app_globals();
-            if (copy_transaction_parameters(args->create_transaction)) {
+            if (args_are_copied) {
                 // never returns
 
                 G_coin_config = args->coin_config;
@@ -425,6 +434,7 @@ static void swap_library_main_helper(struct libargs_s *args) {
                 app_main();
             }
             break;
+        }
         case GET_PRINTABLE_AMOUNT:
             // ensure result is zero if an exception is thrown (compatibility breaking, disabled
             // until LL is ready)
