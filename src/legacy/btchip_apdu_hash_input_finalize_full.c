@@ -420,6 +420,10 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
 
                 transactionSummary->payToAddressVersion =
                     G_coin_config->p2pkh_version;
+                transactionSummary->payToColdStakeVersion =
+                    G_coin_config->p2cs_version;
+                transactionSummary->payToColdStake2Version =
+                    G_coin_config->p2cs2_version;
                 transactionSummary->payToScriptHashVersion =
                     G_coin_config->p2sh_version;
 

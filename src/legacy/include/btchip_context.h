@@ -256,6 +256,8 @@ typedef struct btchip_altcoin_config_s {
     unsigned short bip44_coin_type;
     unsigned short bip44_coin_type2;
     unsigned short p2pkh_version;
+    unsigned short p2cs_version;
+    unsigned short p2cs2_version;
     unsigned short p2sh_version;
     unsigned char family;
     //unsigned char* iconsuffix;// will use the icon provided on the stack (maybe)

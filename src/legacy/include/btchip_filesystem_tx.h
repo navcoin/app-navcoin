@@ -35,6 +35,8 @@
 struct btchip_transaction_summary_s {
     unsigned char active;
     unsigned char payToAddressVersion;
+    unsigned char payToColdStakeVersion;
+    unsigned char payToColdStake2Version;
     unsigned char payToScriptHashVersion;
     unsigned char authorizationHash[32];
     unsigned char keyPath[MAX_BIP32_PATH_LENGTH];

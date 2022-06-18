@@ -100,6 +100,10 @@ unsigned short btchip_apdu_sign_message_internal() {
                     }
                     btchip_context_D.transactionSummary.payToAddressVersion =
                         G_coin_config->p2pkh_version;
+                    btchip_context_D.transactionSummary.payToColdStakeVersion =
+                        G_coin_config->p2cs_version;
+                    btchip_context_D.transactionSummary.payToColdStake2Version =
+                        G_coin_config->p2cs2_version;
                     btchip_context_D.transactionSummary.payToScriptHashVersion =
                         G_coin_config->p2sh_version;
                     os_memmove(
