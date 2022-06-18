@@ -878,10 +878,7 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     unsigned short version = G_coin_config->p2sh_version;
     char tmp[80];
 
-    if (btchip_output_script_is_regular(script)) {
-        addressOffset = 4;
-        version = G_coin_config->p2pkh_version;
-    } else if (btchip_output_script_is_p2cs(script)) {
+    if (btchip_output_script_is_p2cs(script)) {
         version = G_coin_config->p2pkh_version;
         versionSize = 1;
         addressOffset = 6;
@@ -895,8 +892,11 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
             version, 1);
         tmp[textSize] = '\0';
         strcpy(out, "Cold Staking ");
+        PRINTF(out);
         strncat(out, tmp, 8);
+        PRINTF(out);
         strcat(out, ".. / Spending ");
+        PRINTF(out);
 
         addressOffset += 26;
         address[0] = version;
@@ -911,7 +911,11 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
 
         strncat(out, tmp, 8);
         strcat(out, "..");
-    } else if (btchip_output_script_is_p2cs2(script)) {
+        PRINTF(out);
+        return;
+    }
+
+    if (btchip_output_script_is_p2cs2(script)) {
         version = G_coin_config->p2pkh_version;
         versionSize = 1;
         addressOffset = 28;
@@ -925,8 +929,11 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
             version, 1);
         tmp[textSize] = '\0';
         strcpy(out, "Cold Staking v2 ");
+        PRINTF(out);
         strncat(out, tmp, 8);
+        PRINTF(out);
         strcat(out, ".. / Spending ");
+        PRINTF(out);
 
         addressOffset += 26;
         address[0] = version;
@@ -941,6 +948,13 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
 
         strncat(out, tmp, 8);
         strcat(out, "..");
+        PRINTF(out);
+        return;
+    }
+
+    if (btchip_output_script_is_regular(script)) {
+        addressOffset = 4;
+        version = G_coin_config->p2pkh_version;
     }
 
     if (version > 255) {
