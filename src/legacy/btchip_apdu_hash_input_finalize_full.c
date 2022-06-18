@@ -44,7 +44,7 @@ void btchip_apdu_hash_input_finalize_full_reset(void) {
 
 static bool check_output_displayable() {
     bool displayable = true;
-    unsigned char amount[8], isOpReturn, isP2sh, isNativeSegwit, j,
+    unsigned char amount[8], isOpReturn, isP2sh, isP2cs, isP2cs2, isP2cf, isNativeSegwit, j,
         nullAmount = 1;
     unsigned char isOpCreate, isOpCall;
 
@@ -62,6 +62,9 @@ static bool check_output_displayable() {
     isOpReturn =
         btchip_output_script_is_op_return(btchip_context_D.currentOutput + 8);
     isP2sh = btchip_output_script_is_p2sh(btchip_context_D.currentOutput + 8);
+    isP2cs = btchip_output_script_is_p2cs(btchip_context_D.currentOutput + 8);
+    isP2cs2 = btchip_output_script_is_p2cs2(btchip_context_D.currentOutput + 8);
+    isP2cf = btchip_output_script_is_p2cf(btchip_context_D.currentOutput + 8);
     isNativeSegwit = btchip_output_script_is_native_witness(
         btchip_context_D.currentOutput + 8);
     isOpCreate =
@@ -70,6 +73,11 @@ static bool check_output_displayable() {
     isOpCall =
         btchip_output_script_is_op_call(btchip_context_D.currentOutput + 8,
           sizeof(btchip_context_D.currentOutput) - 8);
+    if (!btchip_output_script_is_regular(btchip_context_D.currentOutput + 8) &&
+        !isP2sh && !isP2cs && !isP2cs2 && !isP2cf && !(nullAmount && isOpReturn)) {
+        PRINTF("Error : Unrecognized output script");
+        THROW(EXCEPTION);
+    }
     if (btchip_context_D.tmpCtx.output.changeInitialized && !isOpReturn) {
         bool changeFound = false;
         unsigned char addressOffset =

@@ -34,6 +34,9 @@
 
 unsigned char btchip_output_script_is_regular(unsigned char *buffer);
 unsigned char btchip_output_script_is_p2sh(unsigned char *buffer);
+unsigned char btchip_output_script_is_p2cs(unsigned char *buffer);
+unsigned char btchip_output_script_is_p2cs2(unsigned char *buffer);
+unsigned char btchip_output_script_is_p2cf(unsigned char *buffer);
 unsigned char btchip_output_script_is_op_return(unsigned char *buffer);
 unsigned char btchip_output_script_is_native_witness(unsigned char *buffer);
 
