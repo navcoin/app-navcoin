@@ -916,42 +916,15 @@ uint8_t prepare_single_output() {
 
     // Prepare amount
 
-    // Handle Omni simple send
-    if ((btchip_context_D.currentOutput[offset + 2] == 0x14) &&
-        (os_memcmp(btchip_context_D.currentOutput + offset + 3, "omni", 4) == 0) &&
-        (os_memcmp(btchip_context_D.currentOutput + offset + 3 + 4, "\0\0\0\0", 4) == 0)) {
-            uint8_t headerLength;
-            uint32_t omniAssetId = btchip_read_u32(btchip_context_D.currentOutput + offset + 3 + 4 + 4, 1, 0);
-            switch(omniAssetId) {
-                case OMNI_ASSETID:
-                    strcpy(vars.tmp.fullAmount, "OMNI ");
-                    break;
-                case USDT_ASSETID:
-                    strcpy(vars.tmp.fullAmount, "USDT ");
-                    break;
-                case MAIDSAFE_ASSETID:
-                    strcpy(vars.tmp.fullAmount, "MAID ");
-                    break;
-                default:
-                    snprintf(vars.tmp.fullAmount, sizeof(vars.tmp.fullAmount), "OMNI asset %d ", omniAssetId);
-                    break;
-            }
-            headerLength = strlen(vars.tmp.fullAmount);
-            btchip_context_D.tmp = (uint8_t *)vars.tmp.fullAmount + headerLength;
-            textSize = btchip_convert_hex_amount_to_displayable(btchip_context_D.currentOutput + offset + 3 + 4 + 4 + 4);
-            vars.tmp.fullAmount[textSize + headerLength] = '\0';
-    }
-    else {
-        os_memmove(vars.tmp.fullAmount, G_coin_config->name_short,
-               strlen(G_coin_config->name_short));
-        vars.tmp.fullAmount[strlen(G_coin_config->name_short)] = ' ';
-        btchip_context_D.tmp =
-            (unsigned char *)(vars.tmp.fullAmount +
-                          strlen(G_coin_config->name_short) + 1);
-        textSize = btchip_convert_hex_amount_to_displayable(amount);
-        vars.tmp.fullAmount[textSize + strlen(G_coin_config->name_short) + 1] =
-            '\0';
-    }
+    os_memmove(vars.tmp.fullAmount, G_coin_config->name_short,
+           strlen(G_coin_config->name_short));
+    vars.tmp.fullAmount[strlen(G_coin_config->name_short)] = ' ';
+    btchip_context_D.tmp =
+        (unsigned char *)(vars.tmp.fullAmount +
+                      strlen(G_coin_config->name_short) + 1);
+    textSize = btchip_convert_hex_amount_to_displayable(amount);
+    vars.tmp.fullAmount[textSize + strlen(G_coin_config->name_short) + 1] =
+        '\0';
 
     return 1;
 }
