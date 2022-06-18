@@ -856,6 +856,12 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
         strcpy(out, "OP_RETURN");
         return;
     }
+
+    if (btchip_output_script_is_p2cf(script)) {
+        strcpy(out, "CFUND");
+        return;
+    }
+
     if (btchip_output_script_is_native_witness(script)) {
         if (G_coin_config->native_segwit_prefix) {
             segwit_addr_encode(
@@ -870,10 +876,71 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     unsigned short textSize;
     int addressOffset = 3;
     unsigned short version = G_coin_config->p2sh_version;
+    char tmp[80];
 
     if (btchip_output_script_is_regular(script)) {
         addressOffset = 4;
         version = G_coin_config->p2pkh_version;
+    } else if (btchip_output_script_is_p2cs(script)) {
+        version = G_coin_config->p2pkh_version;
+        versionSize = 1;
+        addressOffset = 6;
+        address[0] = version;
+        os_memmove(address + versionSize,
+                   script + addressOffset, 20);
+
+         // Prepare address
+        textSize = btchip_public_key_to_encoded_base58(
+            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
+            version, 1);
+        tmp[textSize] = '\0';
+        strcpy(out, "Cold Staking ");
+        strncat(out, tmp, 8);
+        strcat(out, ".. / Spending ");
+
+        addressOffset += 26;
+        address[0] = version;
+        os_memmove(address + versionSize,
+                   script + addressOffset, 32);
+
+        // Prepare address
+        textSize = btchip_public_key_to_encoded_base58(
+            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
+            version, 1);
+        tmp[textSize] = '\0';
+
+        strncat(out, tmp, 8);
+        strcat(out, "..");
+    } else if (btchip_output_script_is_p2cs2(script)) {
+        version = G_coin_config->p2pkh_version;
+        versionSize = 1;
+        addressOffset = 28;
+        address[0] = version;
+        os_memmove(address + versionSize,
+                   script + addressOffset, 20);
+
+         // Prepare address
+        textSize = btchip_public_key_to_encoded_base58(
+            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
+            version, 1);
+        tmp[textSize] = '\0';
+        strcpy(out, "Cold Staking v2 ");
+        strncat(out, tmp, 8);
+        strcat(out, ".. / Spending ");
+
+        addressOffset += 26;
+        address[0] = version;
+        os_memmove(address + versionSize,
+                   script + addressOffset, 20);
+
+        // Prepare address
+        textSize = btchip_public_key_to_encoded_base58(
+            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
+            version, 1);
+        tmp[textSize] = '\0';
+
+        strncat(out, tmp, 8);
+        strcat(out, "..");
     }
 
     if (version > 255) {
