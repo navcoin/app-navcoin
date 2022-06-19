@@ -871,6 +871,7 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
         }
         return;
     }
+
     unsigned char versionSize;
     unsigned char address[22];
     unsigned short textSize;
@@ -879,76 +880,33 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     char tmp[80];
 
     if (btchip_output_script_is_p2cs(script)) {
-        version = G_coin_config->p2pkh_version;
+        unsigned char tmpBuffer[61];
+        unsigned char checksumBuffer[32];
+        version = G_coin_config->p2cs_version;
         versionSize = 1;
         addressOffset = 6;
-        address[0] = version;
-        os_memmove(address + versionSize,
-                   script + addressOffset, 20);
+        addressSize = 20;
+        tmpBuffer[0] = version;
 
-         // Prepare address
-        textSize = btchip_public_key_to_encoded_base58(
-            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
-            version, 1);
-        tmp[textSize] = '\0';
-        strcpy(out, "Cold Staking ");
-        PRINTF(out);
-        strncat(out, tmp, 8);
-        PRINTF(out);
-        strcat(out, ".. / Spending ");
-        PRINTF(out);
+        os_memmove(tmpBuffer + versionSize, script + addressOffset, adressSize);
+        os_memmove(tmpBuffer + versionSize + addressSize, script + addressOffset + addressSize, adressSize);
 
-        addressOffset += 26;
-        address[0] = version;
-        os_memmove(address + versionSize,
-                   script + addressOffset, 32);
+        cx_sha256_init(&hash);
+        cx_hash(&hash.header, CX_LAST, tmpBuffer, 40 + versionSize, checksumBuffer, 32);
+        cx_sha256_init(&hash);
+        cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
-        // Prepare address
-        textSize = btchip_public_key_to_encoded_base58(
-            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
-            version, 1);
-        tmp[textSize] = '\0';
+        PRINTF("Checksum\n%.*H\n", 4, checksumBuffer);
+        os_memmove(tmpBuffer + 40 + versionSize, checksumBuffer, 4);
 
-        strncat(out, tmp, 8);
-        strcat(out, "..");
-        PRINTF(out);
+        if (btchip_encode_base58(tmpBuffer, 44 + versionSize, (unsigned char *)out, &out_size) < 0) {
+            THROW(EXCEPTION);
+        }
         return;
     }
 
     if (btchip_output_script_is_p2cs2(script)) {
-        version = G_coin_config->p2pkh_version;
-        versionSize = 1;
-        addressOffset = 28;
-        address[0] = version;
-        os_memmove(address + versionSize,
-                   script + addressOffset, 20);
-
-         // Prepare address
-        textSize = btchip_public_key_to_encoded_base58(
-            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
-            version, 1);
-        tmp[textSize] = '\0';
-        strcpy(out, "Cold Staking v2 ");
-        PRINTF(out);
-        strncat(out, tmp, 8);
-        PRINTF(out);
-        strcat(out, ".. / Spending ");
-        PRINTF(out);
-
-        addressOffset += 26;
-        address[0] = version;
-        os_memmove(address + versionSize,
-                   script + addressOffset, 20);
-
-        // Prepare address
-        textSize = btchip_public_key_to_encoded_base58(
-            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
-            version, 1);
-        tmp[textSize] = '\0';
-
-        strncat(out, tmp, 8);
-        strcat(out, "..");
-        PRINTF(out);
+        strcpy(out, "CsV2");
         return;
     }
 

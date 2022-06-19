@@ -93,7 +93,7 @@ unsigned char btchip_output_script_is_p2sh(unsigned char *buffer) {
 }
 
 unsigned char btchip_output_script_is_p2cs(unsigned char *buffer) {
-    static const unsigned char OP_COINSTAKE = 0xc6; 
+    static const unsigned char OP_COINSTAKE = 0xc6;
 
     if (buffer[1] == OP_COINSTAKE &&
         buffer[2] == 0x63 &&
@@ -106,8 +106,8 @@ unsigned char btchip_output_script_is_p2cs(unsigned char *buffer) {
 }
 
 unsigned char btchip_output_script_is_p2cs2(unsigned char *buffer) {
-    static const unsigned char OP_COINSTAKE = 0xc6; 
-    static const unsigned char OP_DROP = 0x75; 
+    static const unsigned char OP_COINSTAKE = 0xc6;
+    static const unsigned char OP_DROP = 0x75;
 
     if (buffer[22] == OP_DROP &&
         buffer[23] == OP_COINSTAKE &&
