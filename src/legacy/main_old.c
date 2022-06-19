@@ -880,23 +880,22 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     char tmp[80];
 
     if (btchip_output_script_is_p2cs(script)) {
-        unsigned char tmpBuffer[61];
+        unsigned char tmpBuffer[45];
         unsigned char checksumBuffer[32];
+        cx_sha256_t hash;
         version = G_coin_config->p2cs_version;
         versionSize = 1;
         addressOffset = 6;
-        addressSize = 20;
         tmpBuffer[0] = version;
 
-        os_memmove(tmpBuffer + versionSize, script + addressOffset, adressSize);
-        os_memmove(tmpBuffer + versionSize + addressSize, script + addressOffset + addressSize, adressSize);
+        os_memmove(tmpBuffer + versionSize, script + addressOffset, 20);
+        os_memmove(tmpBuffer + versionSize + 20, script + addressOffset + 26, 20);
 
         cx_sha256_init(&hash);
         cx_hash(&hash.header, CX_LAST, tmpBuffer, 40 + versionSize, checksumBuffer, 32);
         cx_sha256_init(&hash);
         cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
-        PRINTF("Checksum\n%.*H\n", 4, checksumBuffer);
         os_memmove(tmpBuffer + 40 + versionSize, checksumBuffer, 4);
 
         if (btchip_encode_base58(tmpBuffer, 44 + versionSize, (unsigned char *)out, &out_size) < 0) {
@@ -907,6 +906,31 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
 
     if (btchip_output_script_is_p2cs2(script)) {
         strcpy(out, "CsV2");
+        return;
+        unsigned char tmpBuffer[65];
+        unsigned char checksumBuffer[32];
+        cx_sha256_t hash;
+        version = G_coin_config->p2cs2_version;
+        versionSize = 1;
+        addressOffset = 6;
+        tmpBuffer[0] = version;
+
+        os_memmove(tmpBuffer + versionSize, script + addressOffset, 20);
+        os_memmove(tmpBuffer + versionSize + 20, script + addressOffset + 26, 20);
+        os_memmove(tmpBuffer + versionSize + 40, script + addressOffset + 26 + 26, 20);
+
+        cx_sha256_init(&hash);
+        cx_hash(&hash.header, CX_LAST, tmpBuffer, 60 + versionSize, checksumBuffer, 32);
+        cx_sha256_init(&hash);
+        cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
+
+        os_memmove(tmpBuffer + 60 + versionSize, checksumBuffer, 4);
+
+        if (btchip_encode_base58(tmpBuffer, 64 + versionSize, (unsigned char *)tmp, sizeof(tmp)) < 0) {
+            THROW(EXCEPTION);
+        }
+        strncat(out, tmp, 32);
+        strcat(out, "..");
         return;
     }
 

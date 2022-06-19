@@ -57,7 +57,7 @@ ifeq ($(COIN),navcoin_testnet)
 DEFINES_LIB=
 APP_LOAD_FLAGS=--appFlags 0xa50
 
-# Bitcoin testnet (can also be used for signet)
+# Testnet (can also be used for signet)
 DEFINES   += BIP32_PUBKEY_VERSION=0x00000000 # unused
 DEFINES   += BIP44_COIN_TYPE=0
 DEFINES   += BIP44_COIN_TYPE_2=0
@@ -78,7 +78,7 @@ else ifeq ($(COIN),navcoin)
 DEFINES_LIB=
 APP_LOAD_FLAGS=--appFlags 0xa50
 
-# Bitcoin mainnet
+# Mainnet
 DEFINES   += BIP32_PUBKEY_VERSION=0x00000000 # unused
 DEFINES   += BIP44_COIN_TYPE=0
 DEFINES   += BIP44_COIN_TYPE_2=0
