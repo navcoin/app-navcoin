@@ -910,12 +910,12 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
         cx_sha256_t hash;
         version = G_coin_config->p2cs2_version;
         versionSize = 1;
-        addressOffset = 6;
+        addressOffset = 28;
         tmpBuffer[0] = version;
 
         os_memmove(tmpBuffer + versionSize, script + addressOffset, 20);
         os_memmove(tmpBuffer + versionSize + 20, script + addressOffset + 26, 20);
-        os_memmove(tmpBuffer + versionSize + 40, script + addressOffset + 26 + 26, 20);
+        os_memmove(tmpBuffer + versionSize + 40, script + 2, 20);
 
         cx_sha256_init(&hash);
         cx_hash(&hash.header, CX_LAST, tmpBuffer, 60 + versionSize, checksumBuffer, 32);
