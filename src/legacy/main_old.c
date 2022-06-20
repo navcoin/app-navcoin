@@ -877,7 +877,7 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     unsigned short textSize;
     int addressOffset = 3;
     unsigned short version = G_coin_config->p2sh_version;
-    char tmp[90] = {0};
+    char tmp[90];
 
     if (btchip_output_script_is_p2cs(script)) {
         unsigned char tmpBuffer[45];
