@@ -137,6 +137,8 @@ void init_coin_config(btchip_altcoin_config_t *coin_config) {
     coin_config->bip44_coin_type = BIP44_COIN_TYPE;
     coin_config->bip44_coin_type2 = BIP44_COIN_TYPE_2;
     coin_config->p2pkh_version = COIN_P2PKH_VERSION;
+    coin_config->p2cs_version = COIN_P2CS_VERSION;
+    coin_config->p2cs2_version = COIN_P2CS2_VERSION;
     coin_config->p2sh_version = COIN_P2SH_VERSION;
 
     // we assume in display.c that the ticker size is at most 5 characters (+ null)
