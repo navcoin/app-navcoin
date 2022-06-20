@@ -877,7 +877,7 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     unsigned short textSize;
     int addressOffset = 3;
     unsigned short version = G_coin_config->p2sh_version;
-    char tmp[80];
+    char tmp[90] = {0};
 
     if (btchip_output_script_is_p2cs(script)) {
         unsigned char tmpBuffer[45];
@@ -905,8 +905,6 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     }
 
     if (btchip_output_script_is_p2cs2(script)) {
-        strcpy(out, "CsV2");
-        return;
         unsigned char tmpBuffer[65];
         unsigned char checksumBuffer[32];
         cx_sha256_t hash;
@@ -926,11 +924,9 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
 
         os_memmove(tmpBuffer + 60 + versionSize, checksumBuffer, 4);
 
-        if (btchip_encode_base58(tmpBuffer, 64 + versionSize, (unsigned char *)tmp, sizeof(tmp)) < 0) {
+        if (btchip_encode_base58(tmpBuffer, 64 + versionSize, (unsigned char *)out, &out_size) < 0) {
             THROW(EXCEPTION);
         }
-        strncat(out, tmp, 32);
-        strcat(out, "..");
         return;
     }
 
@@ -969,7 +965,7 @@ uint8_t prepare_single_output() {
     unsigned char amount[8];
     unsigned int offset = 0;
     unsigned short textSize;
-    char tmp[80] = {0};
+    char tmp[90] = {0};
 
     btchip_swap_bytes(amount, btchip_context_D.currentOutput + offset, 8);
     offset += 8;
@@ -1009,7 +1005,7 @@ extern void btchip_apdu_hash_input_finalize_full_reset(void);
 // Analog of btchip_bagl_confirm_single_output to work
 // in silent mode, when called from SWAP app
 unsigned int btchip_silent_confirm_single_output() {
-    char tmp[80] = {0};
+    char tmp[90] = {0};
     unsigned char amount[8];
     while (true) {
         // in swap operation we can only have 1 "external" output
