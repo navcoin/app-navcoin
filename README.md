@@ -1,4 +1,4 @@
-# Ledger Bitcoin Application
+# Ledger Navcoin Application
 
 ## Prerequisite
 
