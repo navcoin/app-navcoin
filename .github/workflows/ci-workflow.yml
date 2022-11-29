@@ -36,28 +36,28 @@ jobs:
 
       - name: Build
         run: |
-          make DEBUG=0 COIN=bitcoin BOLOS_SDK=${{ matrix.SDK }} && mv bin/ bitcoin-bin/
+          make DEBUG=0 COIN=navcoin BOLOS_SDK=${{ matrix.SDK }} && mv bin/ navcoin-bin/
           make clean
-          make DEBUG=0 COIN=bitcoin_testnet BOLOS_SDK=${{ matrix.SDK }} && mv bin/ bitcoin-testnet-bin/
+          make DEBUG=0 COIN=navcoin_testnet BOLOS_SDK=${{ matrix.SDK }} && mv bin/ navcoin-testnet-bin/
           make clean
-          make DEBUG=0 COIN=bitcoin_testnet_lib BOLOS_SDK=${{ matrix.SDK }} && mv bin/ bitcoin-testnet-lib-bin/
-      - name: Upload Bitcoin app binary
+          make DEBUG=0 COIN=navcoin_testnet_lib BOLOS_SDK=${{ matrix.SDK }} && mv bin/ navcoin-testnet-lib-bin/
+      - name: Upload Navcoin app binary
         uses: actions/upload-artifact@v2
         with:
-          name: bitcoin-app-${{ matrix.model }}
-          path: bitcoin-bin
+          name: navcoin-app-${{ matrix.model }}
+          path: navcoin-bin
 
-      - name: Upload Bitcoin Testnet app binary
+      - name: Upload Navcoin Testnet app binary
         uses: actions/upload-artifact@v2
         with:
-          name: bitcoin-testnet-app-${{ matrix.model }}
-          path: bitcoin-testnet-bin
+          name: navcoin-testnet-app-${{ matrix.model }}
+          path: navcoin-testnet-bin
 
-      - name: Upload Bitcoin Testnet app binary (lib version)
+      - name: Upload Navcoin Testnet app binary (lib version)
         uses: actions/upload-artifact@v2
         with:
-          name: bitcoin-testnet-lib-app-${{ matrix.model }}
-          path: bitcoin-testnet-lib-bin
+          name: navcoin-testnet-lib-app-${{ matrix.model }}
+          path: navcoin-testnet-lib-bin
 
   job_unit_test:
     name: Unit test
@@ -97,7 +97,7 @@ jobs:
           name: codecov-app-bitcoin
           fail_ci_if_error: true
           verbose: true
-      
+
       - name: HTML documentation
         run: doxygen .doxygen/Doxyfile
 
