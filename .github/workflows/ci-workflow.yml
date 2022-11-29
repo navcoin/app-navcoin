@@ -86,7 +86,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./unit-tests/coverage.info
           flags: unittests
-          name: codecov-app-bitcoin
+          name: codecov-app-navcoin
           fail_ci_if_error: true
           verbose: true
 
@@ -128,10 +128,10 @@ jobs:
       - name: Clone
         uses: actions/checkout@v2
 
-      - name: Download Bitcoin Testnet app binary
+      - name: Download Navcoin Testnet app binary
         uses: actions/download-artifact@v2
         with:
-          name: bitcoin-testnet-app-${{matrix.model}}
+          name: navcoin-testnet-app-${{matrix.model}}
           path: bin
 
       - name: Run tests
@@ -170,10 +170,10 @@ jobs:
       - name: Clone
         uses: actions/checkout@v2
 
-      - name: Download Bitcoin app binary
+      - name: Download Navcoin app binary
         uses: actions/download-artifact@v2
         with:
-          name: bitcoin-app-${{matrix.model}}
+          name: navcoin-app-${{matrix.model}}
           path: bin
 
       - name: Run tests
@@ -211,15 +211,15 @@ jobs:
         run: |
           npm install -g yarn
 
-      - name: Download Bitcoin Testnet app binary
+      - name: Download Navcoin Testnet app binary
         uses: actions/download-artifact@v2
         with:
-          name: bitcoin-testnet-app-nanos
+          name: navcoin-testnet-app-nanos
           path: bin
 
       - name: Run tests
         run: |
-          cd bitcoin_client_js
+          cd navcoin_client_js
           yarn install
           LOG_SPECULOS=1 LOG_APDUS=1 SPECULOS="/speculos/speculos.py" yarn test
 
@@ -243,11 +243,11 @@ jobs:
       - name: Clone
         uses: actions/checkout@v2
 
-      - name: Download Bitcoin Testnet app binary
+      - name: Download Navcoin Testnet app binary
         uses: actions/download-artifact@v2
         with:
-          name: bitcoin-testnet-app-nanos
-          path: tests-legacy/bitcoin-testnet-bin
+          name: navcoin-testnet-app-nanos
+          path: tests-legacy/navcoin-testnet-bin
 
       - name: Run tests
         run: |
@@ -276,17 +276,17 @@ jobs:
       - name: Clone
         uses: actions/checkout@v2
 
-      - name: Download Bitcoin app binary
+      - name: Download Navcoin app binary
         uses: actions/download-artifact@v2
         with:
-          name: bitcoin-app-nanos
-          path: tests-legacy/bitcoin-bin
+          name: navcoin-app-nanos
+          path: tests-legacy/navcoin-bin
 
-      - name: Download Bitcoin Testnet app binary (library version)
+      - name: Download Navcoin Testnet app binary (library version)
         uses: actions/download-artifact@v2
         with:
-          name: bitcoin-testnet-lib-app-nanos
-          path: tests-legacy/bitcoin-testnet-bin
+          name: navcoin-testnet-lib-app-nanos
+          path: tests-legacy/navcoin-testnet-bin
 
 
       - name: Run tests
