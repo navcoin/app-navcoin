@@ -39,8 +39,6 @@ jobs:
           make DEBUG=0 COIN=navcoin BOLOS_SDK=${{ matrix.SDK }} && mv bin/ navcoin-bin/
           make clean
           make DEBUG=0 COIN=navcoin_testnet BOLOS_SDK=${{ matrix.SDK }} && mv bin/ navcoin-testnet-bin/
-          make clean
-          make DEBUG=0 COIN=navcoin_testnet_lib BOLOS_SDK=${{ matrix.SDK }} && mv bin/ navcoin-testnet-lib-bin/
       - name: Upload Navcoin app binary
         uses: actions/upload-artifact@v2
         with:
@@ -52,12 +50,6 @@ jobs:
         with:
           name: navcoin-testnet-app-${{ matrix.model }}
           path: navcoin-testnet-bin
-
-      - name: Upload Navcoin Testnet app binary (lib version)
-        uses: actions/upload-artifact@v2
-        with:
-          name: navcoin-testnet-lib-app-${{ matrix.model }}
-          path: navcoin-testnet-lib-bin
 
   job_unit_test:
     name: Unit test
