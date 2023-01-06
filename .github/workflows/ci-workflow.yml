@@ -219,7 +219,7 @@ jobs:
 
       - name: Run tests
         run: |
-          cd navcoin_client_js
+          cd bitcoin_client_js
           yarn install
           LOG_SPECULOS=1 LOG_APDUS=1 SPECULOS="/speculos/speculos.py" yarn test
 
@@ -252,6 +252,8 @@ jobs:
       - name: Run tests
         run: |
           cd tests-legacy
+          cp -rf navcoin-bin bitcoin-bin
+          cp -rf navcoin-testnet-bin bitcoin-testnet-bin
           pip install -r requirements.txt
           PATH=$PATH:/speculos pytest
 
@@ -285,7 +287,7 @@ jobs:
       - name: Download Navcoin Testnet app binary (library version)
         uses: actions/download-artifact@v2
         with:
-          name: navcoin-testnet-lib-app-nanos
+          name: navcoin-testnet-app-nanos
           path: tests-legacy/navcoin-testnet-bin
 
 
